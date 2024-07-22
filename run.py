@@ -11,16 +11,16 @@ from utils import visualize_cam, Normalize
 from gradcam import GradCAM, GradCAMpp
 
 from Unetminedatasets import UnetmineDataset
-from UNet_resmine import Netv2,BottleNeck
+from U_net_resbasic_slimconv_AAM_CA import Netv3,BasicBlock
 from PIL import Image
-img_dir = 'F:/'
+img_dir = 'D:/chenzhehao/git-repos/gradcam'
 
-img_name1 = 'Image__2024-05-21__20-36-52.bmp'
-img_name2 = 'Image__2024-04-23__21-29-45.bmp'
+img_name1 = 'Image__2024-05-21__21-06-21.bmp'
+img_name2 = 'Image__2024-05-21__21-08-10.bmp'
 img_path = [os.path.join(img_dir, img_name1),os.path.join(img_dir, img_name1)]
 full_img1= Image.open(img_path[0])
 full_img2= Image.open(img_path[1])
-device = torch.device('cpu')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 #process
 
 img1 = torch.from_numpy(UnetmineDataset.preprocess([0,1,2], full_img1, 512, 512, False))
@@ -30,17 +30,17 @@ img = img.unsqueeze(1)
 img = img.to(device=device, dtype=torch.float32)
 #部署模型
 
-net = Netv2(BottleNeck, [3, 4, 6, 3])
+net = Netv3(BasicBlock, [1,1,1,1])
 
 net.to(device=device)
-state_dict =torch.load('F:/git-repos/gradcam_plus_plus-pytorch/checkpoint_epoch150.pth', map_location=device)
+state_dict =torch.load('D:/chenzhehao/git-repos/gradcam/UNet+res +AAM+slimconv+CA 1111   basicblock.pth', map_location=device)
 mask_values = state_dict.pop('mask_values', [0, 1, 2])
 net.load_state_dict(state_dict)
 #一系列模型的cam和cam++
 cam_dict = dict()
-model_dict = dict(type='RAUnet', arch=net, layer_name='encoder4',input_size=(512, 512))
-gradcam = GradCAM(model_dict, True)
-gradcampp = GradCAMpp(model_dict, True)
+model_dict = dict(type='RAUnet', arch=net, layer_name='decoder4.deconv2',input_size=(512, 512))
+gradcam = GradCAM(model_dict,class_idx = 1, retain_graph = True)
+gradcampp = GradCAMpp(model_dict,class_idx = 1, retain_graph = True)
 cam_dict['net'] = [gradcam, gradcampp]
 # cam_dict['net'] = [gradcam]
 

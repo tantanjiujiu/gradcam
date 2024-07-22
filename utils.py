@@ -24,7 +24,7 @@ def visualize_cam(mask, img):
 
 
 def find_mymodel_layer(model, name):
-    module = model.encoder4
+    module = model.decoder4.deconv2
     return module
 def find_resnet_layer(arch, target_layer_name):
     """Find resnet layer to calculate GradCAM and GradCAM++

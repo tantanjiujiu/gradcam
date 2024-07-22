@@ -83,7 +83,7 @@ class GradCAM(object):
         """
         b, c, h, w = input.size()
 
-        logit = self.model_arch(input)
+        logit = self.model_arch(input)  #[2,1,512,512]
         if class_idx is None:
             score = logit[:, logit.max(1)[-1]].squeeze()
         else:

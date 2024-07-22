@@ -45,15 +45,15 @@ class BottleNeck(nn.Module):
     def __init__(self, in_channel, out_channel):
         super(BottleNeck, self).__init__()
 
-        self.conv1 = nn.Conv2d(in_channels=in_channel, out_channels=in_channel//4,   # out_channels是第一、二层的卷积核个数
+        self.conv1 = nn.Conv2d(in_channels=in_channel, out_channels=out_channel,   # out_channels是第一、二层的卷积核个数
                                kernel_size=1, stride=1, bias=False)  # squeeze channels  高和宽不变
-        self.bn1 = nn.BatchNorm2d(in_channel//4)
+        self.bn1 = nn.BatchNorm2d(out_channel)
         # -----------------------------------------
-        self.conv2 = nn.Conv2d(in_channels=in_channel//4, out_channels=in_channel//4,
+        self.conv2 = nn.Conv2d(in_channels=out_channel, out_channels=out_channel,
                                kernel_size=3, stride=1, bias=False, padding=1)   # 实线stride为1，虚线stride为2
-        self.bn2 = nn.BatchNorm2d(in_channel//4)
+        self.bn2 = nn.BatchNorm2d(out_channel)
         # -----------------------------------------
-        self.conv3 = nn.Conv2d(in_channels=in_channel//4, out_channels=out_channel,    # 卷积核个数为4倍
+        self.conv3 = nn.Conv2d(in_channels=out_channel, out_channels=out_channel,    # 卷积核个数为4倍
                                kernel_size=1, stride=1, bias=False)  # unsqueeze channels
         self.bn3 = nn.BatchNorm2d(out_channel)
         self.relu = nn.ReLU(inplace=True)
